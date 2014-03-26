@@ -15,6 +15,9 @@ public class DiceSet {
     private LinkedList<Integer> numDice;
     private int addToRoll;
 
+    /**
+     * Empty constructor - not sure if needed
+     */
     public DiceSet() {
         this.dieTypes = new LinkedList<Dice>();
         this.numDice = new LinkedList<Integer>();
@@ -23,6 +26,11 @@ public class DiceSet {
         this.rollSet = "";
     }
 
+    /**
+     * constructor to use if no name is specified
+     *
+     * @param diceString - - the string representing the set of dice.
+     */
     public DiceSet(String diceString) {
         this.name = diceString;
         this.dieTypes = new LinkedList<Dice>();
@@ -32,6 +40,11 @@ public class DiceSet {
         this.parseDiceString(diceString);
     }
 
+    /**
+     * The constructor to use if a name is specified.
+     * @param diceString
+     * @param name
+     */
     public DiceSet(String diceString, String name) {
         this.name = name;
         this.name = diceString;
@@ -56,37 +69,50 @@ public class DiceSet {
         diceString = diceString.toLowerCase();
         diceString = diceString.trim();
 
+        //counts the number of types of dice (needed for constant at the end)
         for (char c : diceString.toCharArray()) {
             if (c == 'd') {
                 diceGroups++;
             }
         }
 
+        //parses the string
         for (int i = 0; i + 1 < diceString.length(); i++) {
             char curChar = diceString.charAt(i);
             char nextChar = diceString.charAt(i + 1);
+            //check for constant
             if (groupCount < diceGroups) {
+                /* if the current character is a digit, multiply tempVal by 10
+                 * and add the number to tempVal.
+                 */
                 if (Character.isDigit(curChar)) {
                     tempVal *= 10;
                     tempVal += Character.getNumericValue(diceString.charAt(i));
                 }
 
-                if (nextChar == 'd') {
+                /* if the current character is a d, add tempVal to numDice
+                 */
+                if (curChar == 'd') {
                     this.numDice.add(tempVal);
                     tempVal = 0;
                 }
 
-                if (nextChar == '+') {
+                /* if the current character is a '+', add a new die with tempVal sides,
+                 * increment groupCount
+                 */
+                if (curChar == '+') {
                     this.dieTypes.add(new Dice(tempVal));
                     tempVal = 0;
                     groupCount++;
                 }
             } else {
+                /* if the next character is the last character in the string, this is a constant.
+                 */
                 if (i + 1 == diceString.length()) {
                     tempVal *= 10;
                     tempVal += Character.getNumericValue(diceString.charAt(i));
                     this.addToRoll = tempVal;
-                } else if (Character.isDigit(curChar)) {
+                } else if (Character.isDigit(curChar)) { //otherwise, if it's a number do this.
                     tempVal *= 10;
                     tempVal += Character.getNumericValue(diceString.charAt(i));
                 }
@@ -94,15 +120,23 @@ public class DiceSet {
         }
     }
 
+    /**
+     * returns the name of the dice set
+     * @return name - the name of the dice set
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * rolls the dice set
+     * @return the sum of the rolls plus the constant
+     */
     public int roll() {
         int sum = 0;
-        for (int i = 0; i < this.dieTypes.size(); i++) {
+        for (int i = 0; i < this.dieTypes.size(); i++) { //keeps track of which set we're on
             Dice d = this.dieTypes.get(i);
-            for (int j = 0; j < this.numDice.get(i); j++) {
+            for (int j = 0; j < this.numDice.get(i); j++) { //keeps track of the number of times we've rolled.
                 int temp = d.roll();
                 sum += temp;
                 this.rollSet += (temp + "+");
@@ -111,6 +145,10 @@ public class DiceSet {
         return sum + this.addToRoll;
     }
 
+    /**
+     * returns a string representation of the dice set.
+     * @return the string representing the dice set.
+     */
     public String toString() {
         return this.diceString + "\n(" + this.rollSet + ")";
     }
