@@ -9,6 +9,8 @@ import java.util.LinkedList;
 public class DiceSet {
 
     private String name;
+    private String rollSet;
+    private String diceString;
     private LinkedList<Dice> dieTypes;
     private LinkedList<Integer> numDice;
     private int addToRoll;
@@ -16,14 +18,17 @@ public class DiceSet {
     public DiceSet() {
         this.dieTypes = new LinkedList<Dice>();
         this.numDice = new LinkedList<Integer>();
-        this.name = "0d0";
+        this.name = "";
+        this.diceString = "";
+        this.rollSet = "";
     }
 
     public DiceSet(String diceString) {
         this.name = diceString;
         this.dieTypes = new LinkedList<Dice>();
         this.numDice = new LinkedList<Integer>();
-
+        this.rollSet = "";
+        this.diceString = diceString;
         this.parseDiceString(diceString);
     }
 
@@ -32,7 +37,8 @@ public class DiceSet {
         this.name = diceString;
         this.dieTypes = new LinkedList<Dice>();
         this.numDice = new LinkedList<Integer>();
-
+        this.rollSet = "";
+        this.diceString = diceString;
         this.parseDiceString(diceString);
     }
 
@@ -47,8 +53,8 @@ public class DiceSet {
         int tempVal = 0;
         int diceGroups = 0;
         int groupCount = 0;
-        diceString.toLowerCase();
-        diceString.trim();
+        diceString = diceString.toLowerCase();
+        diceString = diceString.trim();
 
         for (char c : diceString.toCharArray()) {
             if (c == 'd') {
@@ -88,11 +94,24 @@ public class DiceSet {
         }
     }
 
-    public String toString(){
-        String outStr = "";
-        for(int i = 0; i < this.dieTypes.size(); i++) {
-            outStr+=this.numDice.get(i)+"+"+this.dieTypes.get(i).toString()+"+";
+    public String getName() {
+        return name;
+    }
+
+    public int roll() {
+        int sum = 0;
+        for (int i = 0; i < this.dieTypes.size(); i++) {
+            Dice d = this.dieTypes.get(i);
+            for (int j = 0; j < this.numDice.get(i); j++) {
+                int temp = d.roll();
+                sum += temp;
+                this.rollSet += (temp + "+");
+            }
         }
-        return outStr+"+"+addToRoll;
+        return sum + this.addToRoll;
+    }
+
+    public String toString() {
+        return this.diceString + "\n(" + this.rollSet + ")";
     }
 }
